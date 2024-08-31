@@ -31,11 +31,14 @@ export class BullQueue implements IQueue {
     if (!this.queue) {
       throw new Error("Queue is not initialized");
     }
-    await this.queue.add(data);
-    Logger.log("Enqueued message to Bull queue", {
-      queue: this.queueName,
-      data,
+    await this.queue.add(data, {
+      attempts: config.queue.retry.maxRetries,
+      backoff: {
+        type: "fixed",
+        delay: config.queue.retry.retryDelay,
+      },
     });
+    // Logger.log("Enqueued message to Bull queue", {queue: this.queueName, data,});
   }
 
   process(queueName: string, handler: (data: any) => Promise<void>): void {
@@ -45,10 +48,7 @@ export class BullQueue implements IQueue {
     this.queue.process(async (job) => {
       try {
         await handler(job.data);
-        Logger.log("Processed job from Bull queue", {
-          queue: queueName,
-          data: job.data,
-        });
+        // Logger.log("Processed job from Bull queue", { queue: queueName,data: job.data,});
       } catch (error) {
         Logger.error("Processing error in Bull queue", {
           queue: queueName,

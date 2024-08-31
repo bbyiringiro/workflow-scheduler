@@ -33,11 +33,7 @@ export const handleEvent = async (
   const workflowData = workflow.serialize();
   await eventQueue.enqueue(workflowData);
 
-  Logger.log("Event enqueued", {
-    eventName,
-    userEmail,
-    workflowId: workflow.getId(),
-  });
+  //   Logger.log("Event enqueued", {eventName,userEmail,workflowId: workflow.getId(),});
 
   // Process the queue for this specific event
   eventQueue.process(eventName, async (data) => {

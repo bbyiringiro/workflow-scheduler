@@ -34,12 +34,12 @@ export class RabbitMQQueue implements IQueue {
     Logger.log("RabbitMQ temporary queue created", { queue: this.queueName });
   }
 
-  async enqueue(data: any): Promise<void> {
+  async enqueue(data: any, retryCount: number = 0): Promise<void> {
     if (!this.channel) {
       throw new Error("Channel is not initialized");
     }
-    const content = Buffer.from(JSON.stringify(data));
-    this.channel.sendToQueue(this.queueName, content);
+    const content = Buffer.from(JSON.stringify({ ...data, retryCount }));
+    this.channel.sendToQueue(this.queueName, content, { persistent: true });
     Logger.log("Enqueued message to RabbitMQ", { queue: this.queueName, data });
   }
 
@@ -54,16 +54,14 @@ export class RabbitMQQueue implements IQueue {
         try {
           await handler(data);
           this.channel!.ack(msg);
-          Logger.log("Processed message from RabbitMQ", {
-            queue: queueName,
-            data,
-          });
+          //   Logger.log("Processed message from RabbitMQ", {queue: queueName, data, });
         } catch (error) {
-          Logger.error("Processing error in RabbitMQ", {
-            queue: queueName,
-            data,
-            error,
-          });
+          const { maxRetries } = config.queue.retry;
+          if (data.retryCount < maxRetries) {
+            await this.enqueue(data, data.retryCount + 1);
+          } else {
+            this.channel!.nack(msg, false, false);
+          }
         }
       }
     });

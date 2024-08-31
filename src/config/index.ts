@@ -16,10 +16,10 @@ export default {
     },
   },
   rabbitmq: {
-    url: process.env.RABBITMQ_URL || "amqp://localhost",
+    url: process.env.RABBITMQ_URL || "amqp://rabbitmq",
   },
   redis: {
-    host: process.env.REDIS_HOST || "localhost",
+    host: process.env.REDIS_HOST || "redis",
     port: parseInt(process.env.REDIS_PORT || "6379", 10),
   },
 };
