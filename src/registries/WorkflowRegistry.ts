@@ -1,4 +1,3 @@
-// src/registry/workflowRegistry.ts
 import { Workflow } from "../models/Workflow";
 import { EmailAction, EmailContent } from "../actions/EmailAction";
 import { TimerAction, TimerContent } from "../actions/TimerAction";

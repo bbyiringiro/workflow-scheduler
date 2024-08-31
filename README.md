@@ -19,6 +19,15 @@ The core components of the architecture include:
 - **Queues**: `RabbitMQQueue` and `BullQueue` are implemented to manage message processing and retry logic.
 - **Event Handling**: The `EventHandler` service listens for incoming events, triggers the corresponding workflow, and enqueues the workflow for processing.
 
+## Project Structure
+
+- `src/actions`: Contains action classes like `EmailAction` and `TimerAction`.
+- `src/models`: Contains the `Workflow` model which manages the execution of actions.
+- `src/queues`: Contains queue implementations like `RabbitMQQueue` and `BullQueue`.
+- `src/services`: Contains services like `EventHandler` that manage event processing.
+- `src/utils`: Utility functions like `Logger` for logging.
+- `tests/unit-tests`: Unit tests for the project, organized by feature.
+
 ## Getting Started
 ### Prerequisites
 -  **Node.js**: Ensure that you have Node.js installed on your machine.
@@ -43,12 +52,19 @@ pnpm install
 docker-compose up --build
 ```
 
-## Project Structure
+## Manual HTTP Testing
 
-- `src/actions`: Contains action classes like `EmailAction` and `TimerAction`.
-- `src/models`: Contains the `Workflow` model which manages the execution of actions.
-- `src/queues`: Contains queue implementations like `RabbitMQQueue` and `BullQueue`.
-- `src/services`: Contains services like `EventHandler` that manage event processing.
-- `src/utils`: Utility functions like `Logger` for logging.
-- `tests/unit-tests`: Unit tests for the project, organized by feature.
+You can manually test the event handling by sending an HTTP POST request to the application’s event endpoint.
+
+### Example 1: Testing "socksPurchased" Event
+
+```bash
+curl -X POST http://localhost:3000/api/event -H "Content-Type: application/json" -d '{ "eventName": "socksPurchased", "userEmail": "pete@healthtech1.uk" }'
+```
+
+### Example 2: Testing "websiteSignup" Event
+
+```bash
+curl -X POST http://localhost:3000/api/event -H "Content-Type: application/json" -d '{ "eventName": "websiteSignup", "userEmail": "pete@healthtech1.uk" }'
+```
 
