@@ -7,12 +7,33 @@ export class EmailContent {
 }
 
 export class EmailAction extends Action {
+  type: string = "EmailAction";
   constructor(private content: EmailContent) {
     super();
   }
 
   async execute(): Promise<void> {
     Logger.log(`Sending email`, { subject: this.content.subject });
-    // TODO
+    const success = await sendEmail();
+
+    if (success) {
+      Logger.log(`Email sent successfully`, { subject: this.content.subject });
+    } else {
+      Logger.error(`Failed to send email`, { subject: this.content.subject });
+      throw new Error("Email failed to send");
+    }
+  }
+
+  serialize() {
+    return {
+      type: this.type,
+      content: this.content,
+    };
+  }
+
+  static deserialize(data: any): EmailAction {
+    return new EmailAction(
+      new EmailContent(data.content.subject, data.content.body)
+    );
   }
 }

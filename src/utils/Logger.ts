@@ -9,4 +9,8 @@ export class Logger {
       meta || ""
     );
   }
+
+  static warn(message: string, meta?: object): void {
+    console.warn(`[WARN] ${new Date().toISOString()} ${message}`, meta || "");
+  }
 }
