@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { Logger } from "../utils/Logger";
+import { validateEvent } from "../services/eventValidator";
 
 const router = Router();
 
@@ -10,6 +11,15 @@ router.get("/", (_, res) => {
 
 router.post("/", async (req: Request, res: Response) => {
   const { eventName, userEmail } = req.body;
+  const validationError = validateEvent(eventName, userEmail);
+  if (validationError) {
+    Logger.error("Validation failed", {
+      eventName,
+      userEmail,
+      error: validationError,
+    });
+    return res.status(400).json({ error: validationError });
+  }
 
   try {
     res.status(200).json({ message: "Event received and processing started." });
