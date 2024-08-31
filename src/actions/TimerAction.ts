@@ -5,6 +5,9 @@ export class TimerContent {
   constructor(public duration: number) {}
 }
 
+/**
+ * Represents a timer action in the workflow.
+ */
 export class TimerAction extends Action {
   type: string = "TimerAction";
   constructor(private content: TimerContent) {

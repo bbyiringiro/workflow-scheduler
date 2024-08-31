@@ -8,6 +8,7 @@ const router = Router();
 router.post("/", async (req: Request, res: Response) => {
   const { eventName, userEmail } = req.body;
 
+  // Validate the incoming event data
   const validationError = validateEvent(eventName, userEmail);
   if (validationError) {
     Logger.error("Validation failed", {
@@ -19,8 +20,8 @@ router.post("/", async (req: Request, res: Response) => {
   }
 
   try {
-    const queue = req.app.get("queue");
-    await handleEvent(eventName, userEmail, queue);
+    // Handle the event, including queue creation and workflow management
+    await handleEvent(eventName, userEmail);
     res.status(200).json({ message: "Event received and processing started." });
   } catch (error) {
     if (error instanceof WorkflowNotFoundError) {
@@ -31,4 +32,5 @@ router.post("/", async (req: Request, res: Response) => {
     }
   }
 });
+
 export default router;

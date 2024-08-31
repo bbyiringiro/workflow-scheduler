@@ -1,5 +1,13 @@
 {
     "compilerOptions": {
+        // "strict": true,
+        // "noImplicitAny": true,
+        // "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
@@ -7,7 +15,5 @@
         "sourceMap": true,
         "outDir": "dist"
     },
-    "lib": [
-        "es2015"
-    ]
+ 
 }

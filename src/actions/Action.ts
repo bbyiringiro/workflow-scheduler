@@ -1,3 +1,6 @@
+/**
+ * An Abstract class tthat represents an  action in the workflow.
+ */
 export interface IAction {
   execute(): Promise<void>;
 }

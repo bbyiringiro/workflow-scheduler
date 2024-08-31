@@ -6,6 +6,9 @@ export class EmailContent {
   constructor(public subject: string, public body: string) {}
 }
 
+/**
+ * Represents an email action in the workflow.
+ */
 export class EmailAction extends Action {
   type: string = "EmailAction";
   constructor(private content: EmailContent) {
