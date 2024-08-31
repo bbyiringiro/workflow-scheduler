@@ -28,7 +28,7 @@ The core components of the architecture include:
 npm install -g pnpm
 ```
 
-	•	Docker: Ensure Docker and Docker Compose are installed if you plan to run the application using Docker.
+#### Docker: Ensure Docker and Docker Compose are installed if you plan to run the application using Docker.
 ### Installation
 
 
