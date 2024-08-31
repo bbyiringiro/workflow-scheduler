@@ -1,0 +1,8 @@
+services:
+  workflow-app:
+    build: .
+    command: pnpm run dev
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3000:3000"
