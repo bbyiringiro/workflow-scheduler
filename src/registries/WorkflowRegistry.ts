@@ -13,7 +13,7 @@ function createWebsiteSignupWorkflow(userEmail: string): Workflow {
   workflow.addAction(
     new EmailAction(new EmailContent("Welcome!", "Thank you for signing up."))
   );
-  workflow.addAction(new TimerAction(new TimerContent(5 * 1000)));
+  workflow.addAction(new TimerAction(new TimerContent(2 * 60 * 60 * 1000))); // 2 hours
   workflow.addAction(
     new EmailAction(new EmailContent("Follow Up", "Here is a follow-up email."))
   );
