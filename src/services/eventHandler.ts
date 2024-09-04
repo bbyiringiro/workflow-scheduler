@@ -24,27 +24,67 @@ export const handleEvent = async (
     );
   }
 
+  const workFlowQueueName = eventName + "-" + workflow.getId();
   const eventQueue = await QueueFactory.createQueue(
     config.queue.type,
-    eventName
+    workFlowQueueName
   );
   await eventQueue.connect(); // Ensure the connection is established
 
-  const workflowData = workflow.serialize();
-  await eventQueue.enqueue(workflowData);
+  Logger.log("Queue connected", { queueName: workFlowQueueName });
 
-  //   Logger.log("Event enqueued", {eventName,userEmail,workflowId: workflow.getId(),});
+  const actions = workflow.getActions();
+  if (actions.length > 0) {
+    Logger.log("Enqueueing initial action", {
+      actionType: actions[0].constructor.name,
+      workflowId: workflow.getId(),
+    });
+    await eventQueue.enqueue({
+      action: actions[0].serialize(),
+      workflowId: workflow.getId(),
+      index: 0,
+    });
+  }
 
-  // Process the queue for this specific event
-  eventQueue.process(eventName, async (data) => {
+  eventQueue.process(workFlowQueueName, async (data) => {
+    const action = Workflow.deserializeAction(data.action);
+    Logger.log("Processing action", {
+      actionType: action.constructor.name,
+      index: data.index,
+      workflowId: data.workflowId,
+    });
+
     try {
-      const workflow = Workflow.fromData(data);
-      await workflow.run();
-      Logger.log("Workflow processed successfully", {
-        workflowId: workflow.getId(),
+      await action.execute();
+      Logger.log("Action executed successfully", {
+        actionType: action.constructor.name,
+        index: data.index,
+        workflowId: data.workflowId,
       });
+
+      const nextIndex = data.index + 1;
+      if (nextIndex < actions.length) {
+        Logger.log("Enqueueing next action", {
+          actionType: actions[nextIndex].constructor.name,
+          index: nextIndex,
+          workflowId: data.workflowId,
+        });
+        await eventQueue.enqueue({
+          action: actions[nextIndex].serialize(),
+          workflowId: data.workflowId,
+          index: nextIndex,
+        });
+      } else {
+        Logger.log("Workflow completed", { workflowId: data.workflowId });
+      }
     } catch (error) {
-      Logger.error("Failed to process workflow", { error });
+      Logger.error("Action execution failed", {
+        actionType: action.constructor.name,
+        index: data.index,
+        workflowId: data.workflowId,
+        error,
+      });
+      throw error;
     }
   });
 };

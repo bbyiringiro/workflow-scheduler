@@ -17,6 +17,14 @@ export class Workflow {
     this.actions.push(action);
   }
 
+  getActions(): Action[] {
+    return this.actions;
+  }
+
+  getId(): string {
+    return this.id;
+  }
+
   async run(): Promise<void> {
     Logger.log(`Running workflow`, { id: this.id, name: this.name });
     for (const action of this.actions) {
@@ -37,36 +45,6 @@ export class Workflow {
     }
   }
 
-  static fromData(data: any): Workflow {
-    if (!data || typeof data !== "object") {
-      throw new Error("Invalid workflow data provided.");
-    }
-
-    const workflow = new Workflow(data.name, data.userEmail, data.id);
-    // Logger.log("Deserializing workflow", { id: workflow.getId(), data });
-
-    if (Array.isArray(data.actions)) {
-      for (const actionData of data.actions) {
-        let action: Action;
-        switch (actionData.type) {
-          case "EmailAction":
-            action = EmailAction.deserialize(actionData);
-            break;
-          case "TimerAction":
-            action = TimerAction.deserialize(actionData);
-            break;
-          default:
-            throw new Error(`Unknown action type: ${actionData.type}`);
-        }
-        workflow.addAction(action);
-      }
-    } else {
-      throw new Error("Invalid actions data. Expected an array of actions.");
-    }
-
-    return workflow;
-  }
-
   // Method to serialize the workflow into a plain object
   serialize(): any {
     return {
@@ -77,7 +55,24 @@ export class Workflow {
     };
   }
 
-  getId(): string {
-    return this.id;
+  static fromData(data: any): Workflow {
+    if (!data || typeof data !== "object") {
+      throw new Error("Invalid workflow data provided.");
+    }
+
+    const workflow = new Workflow(data.name, data.userEmail, data.id);
+    workflow.actions = data.actions.map(Workflow.deserializeAction);
+    return workflow;
+  }
+
+  static deserializeAction(data: any): Action {
+    switch (data.type) {
+      case "EmailAction":
+        return EmailAction.deserialize(data);
+      case "TimerAction":
+        return TimerAction.deserialize(data);
+      default:
+        throw new Error(`Unknown action type: ${data.type}`);
+    }
   }
 }

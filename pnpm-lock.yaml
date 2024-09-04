@@ -27,6 +27,9 @@ importers:
       '@eslint/js':
         specifier: ^9.9.1
         version: 9.9.1
+      '@types/dotenv':
+        specifier: ^8.2.0
+        version: 8.2.0
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -450,6 +453,10 @@ packages:
 
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
+
+  '@types/dotenv@8.2.0':
+    resolution: {integrity: sha512-ylSC9GhfRH7m1EUXBXofhgx4lUWmFeQDINW5oLuS+gxWdfUeW4zJdeVTYVkexEW+e2VUvlZR2kGnGGipAWR7kw==}
+    deprecated: This is a stub types definition. dotenv provides its own type definitions, so you do not need this installed.
 
   '@types/express-serve-static-core@4.19.5':
     resolution: {integrity: sha512-y6W03tvrACO72aijJ5uF02FRq5cgDR9lUxddQ8vyF+GvmjJQqbzDcJngEjURc+ZsG31VI3hODNZJ2URj86pzmg==}
@@ -2633,6 +2640,10 @@ snapshots:
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.5.1
+
+  '@types/dotenv@8.2.0':
+    dependencies:
+      dotenv: 16.4.5
 
   '@types/express-serve-static-core@4.19.5':
     dependencies:
