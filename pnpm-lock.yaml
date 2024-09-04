@@ -27,6 +27,9 @@ importers:
       '@eslint/js':
         specifier: ^9.9.1
         version: 9.9.1
+      '@types/amqplib':
+        specifier: ^0.10.5
+        version: 0.10.5
       '@types/dotenv':
         specifier: ^8.2.0
         version: 8.2.0
@@ -435,6 +438,9 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@types/amqplib@0.10.5':
+    resolution: {integrity: sha512-/cSykxROY7BWwDoi4Y4/jLAuZTshZxd8Ey1QYa/VaXriMotBDoou7V/twJiOSHzU6t1Kp1AHAUXGCgqq+6DNeg==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2610,6 +2616,10 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@types/amqplib@0.10.5':
+    dependencies:
+      '@types/node': 22.5.1
 
   '@types/babel__core@7.20.5':
     dependencies:

@@ -38,9 +38,14 @@ export class RabbitMQQueue implements IQueue {
     if (!this.channel) {
       throw new Error("Channel is not initialized");
     }
-    const content = Buffer.from(JSON.stringify({ ...data, retryCount }));
+    const updatedData = { ...data, retryCount };
+    const content = Buffer.from(JSON.stringify(updatedData));
     this.channel.sendToQueue(this.queueName, content, { persistent: true });
-    Logger.log("Enqueued message to RabbitMQ", { queue: this.queueName, data });
+    Logger.log("Enqueued message to RabbitMQ", {
+      queue: this.queueName,
+      data: updatedData,
+      retryCount,
+    });
   }
 
   process(queueName: string, handler: (data: any) => Promise<void>): void {
@@ -56,12 +61,7 @@ export class RabbitMQQueue implements IQueue {
           this.channel!.ack(msg);
           //   Logger.log("Processed message from RabbitMQ", {queue: queueName, data, });
         } catch (error) {
-          const { maxRetries } = config.queue.retry;
-          if (data.retryCount < maxRetries) {
-            await this.enqueue(data, data.retryCount + 1);
-          } else {
-            this.channel!.nack(msg, false, false);
-          }
+          this.scheduleRetry(data, msg); // Pass the original message for retry
         }
       }
     });
@@ -75,5 +75,35 @@ export class RabbitMQQueue implements IQueue {
       await this.connection.close();
     }
     Logger.log("RabbitMQ connection closed", { queue: this.queueName });
+  }
+
+  /**
+   * Schedules a retry for a message that failed processing, using exponential backoff.
+   *
+   */
+  scheduleRetry(data: any, msg: amqp.Message) {
+    const retryCount = data.retryCount || 0;
+    // Calculate the delay for the next retry using exponential backoff.
+    // The delay increases exponentially with the number of retry attempts
+    const delay = Math.pow(2, retryCount) * config.queue.retry.retryDelay;
+    Logger.log(
+      "Scheduling retry with delay: " +
+        delay +
+        "ms for retry count: " +
+        (retryCount + 1)
+    );
+
+    setTimeout(() => this.retryMessage(data, retryCount + 1, msg), delay);
+  }
+
+  async retryMessage(data: any, retryCount: number, msg: amqp.Message) {
+    if (retryCount <= config.queue.retry.maxRetries) {
+      Logger.log("Retrying message", { data, retryCount });
+      await this.enqueue(data, retryCount);
+      this.channel!.ack(msg); // Acknowledge the original message
+    } else {
+      Logger.error("Max retries exceeded, not requeuing", { data });
+      this.channel!.nack(msg, false, false); // Reject and don't requeue
+    }
   }
 }

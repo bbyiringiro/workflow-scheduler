@@ -34,7 +34,7 @@ export class BullQueue implements IQueue {
     await this.queue.add(data, {
       attempts: config.queue.retry.maxRetries,
       backoff: {
-        type: "fixed",
+        type: "exponential",
         delay: config.queue.retry.retryDelay,
       },
     });
